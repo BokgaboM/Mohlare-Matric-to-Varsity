@@ -43,9 +43,6 @@ data class Application(val name: String, val closes: String, val status: AppStat
 data class DocumentItem(val name: String, val ready: Boolean)
 
 object SampleData {
-    const val aps = 34
-    const val subjectCount = 6
-    const val matchingCourses = 12
 
     val deadlines = listOf(
         Deadline("01", "AUG", "University of Limpopo", "BSc Computer Science · closes", "12 days", true),

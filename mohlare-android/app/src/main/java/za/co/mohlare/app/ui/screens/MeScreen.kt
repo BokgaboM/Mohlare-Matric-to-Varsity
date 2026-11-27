@@ -44,6 +44,7 @@ import za.co.mohlare.app.ui.theme.Mohlare
 fun MeScreen(
     profile: UserProfile,
     message: String?,
+    onOpenMarks: () -> Unit,
     onOpenAppearance: () -> Unit,
     onSignOut: () -> Unit,
     onDeleteAccount: () -> Unit,
@@ -98,7 +99,11 @@ fun MeScreen(
         }
         item {
             Section("Me & my look") {
-                SettingRow("${SampleData.subjectCount} subjects · APS ${SampleData.aps}", "Edit") { /* TODO: marks editor */ }
+                SettingRow(
+                    if (profile.hasMarks) "${profile.marks.size} subjects · APS ${profile.aps.total}" else "My marks",
+                    if (profile.hasMarks) "Edit" else "Add",
+                    onClick = onOpenMarks,
+                )
                 SettingRow("Appearance", t.displayName, onClick = onOpenAppearance)
             }
         }

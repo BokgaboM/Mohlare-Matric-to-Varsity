@@ -51,7 +51,7 @@ fun PathScreen(profile: UserProfile, onUpdateMarks: () -> Unit, onSeePlan: () ->
                 Text(profile.gradeAndProvince, color = c.muted, fontSize = 14.sp)
             }
         }
-        item { Box(Modifier.padding(horizontal = 20.dp)) { ApsHero(onUpdateMarks) } }
+        item { Box(Modifier.padding(horizontal = 20.dp)) { ApsHero(profile, onUpdateMarks) } }
         item { Box(Modifier.padding(horizontal = 20.dp)) { SectionHeader("Next up", "See plan", onSeePlan) } }
         items(SampleData.deadlines) { d ->
             Box(Modifier.padding(horizontal = 20.dp)) {
@@ -72,7 +72,15 @@ fun PathScreen(profile: UserProfile, onUpdateMarks: () -> Unit, onSeePlan: () ->
 
 /** The APS block. Heritage draws it as a dark card; Litema as an arch. */
 @Composable
-private fun ApsHero(onUpdateMarks: () -> Unit) {
+private fun ApsHero(profile: UserProfile, onUpdateMarks: () -> Unit) {
+    val aps = profile.aps
+    val apsText = if (profile.hasMarks) "${aps.total}" else "–"
+    val detail = if (profile.hasMarks) {
+        "Best ${aps.counted.size} subjects · ${profile.marksTerm.ifBlank { "your marks" }}"
+    } else {
+        "Add your marks to see your APS and which courses you qualify for."
+    }
+    val action = if (profile.hasMarks) "Update marks" else "Add my marks"
     val t = Mohlare.tokens
     val c = t.colors
     when (t.hero) {
@@ -85,13 +93,13 @@ private fun ApsHero(onUpdateMarks: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Text("YOUR APS", color = c.heroLabel, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-            Text("${SampleData.aps}", color = c.onHero, fontFamily = t.headingFont, fontWeight = FontWeight.Bold, fontSize = 56.sp)
-            Text("From ${SampleData.subjectCount} subjects · ${SampleData.matchingCourses} saved courses match", color = c.onHero.copy(alpha = 0.85f), fontSize = 13.sp)
+            Text(apsText, color = c.onHero, fontFamily = t.headingFont, fontWeight = FontWeight.Bold, fontSize = 56.sp)
+            Text(detail, color = c.onHero.copy(alpha = 0.85f), fontSize = 13.sp)
             OutlinedButton(
                 onClick = onUpdateMarks,
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = c.onHero),
                 shape = RoundedCornerShape(50),
-            ) { Text("Update marks") }
+            ) { Text(action) }
         }
         HeroStyle.ARCH -> Box(
             Modifier.fillMaxWidth().height(220.dp).clip(RoundedCornerShape(t.cardRadius)),
@@ -107,10 +115,10 @@ private fun ApsHero(onUpdateMarks: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom,
             ) {
-                Text("${SampleData.aps}", color = c.ink, fontFamily = t.headingFont, fontWeight = FontWeight.Bold, fontSize = 56.sp)
+                Text(apsText, color = c.ink, fontFamily = t.headingFont, fontWeight = FontWeight.Bold, fontSize = 56.sp)
                 Text("YOUR APS", color = c.muted, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                 androidx.compose.material3.TextButton(onClick = onUpdateMarks) {
-                    Text("Update marks", color = c.accent, fontWeight = FontWeight.SemiBold)
+                    Text(action, color = c.accent, fontWeight = FontWeight.SemiBold)
                 }
             }
         }

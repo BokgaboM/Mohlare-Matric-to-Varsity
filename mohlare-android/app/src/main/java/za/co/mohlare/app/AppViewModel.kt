@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import za.co.mohlare.app.data.AuthRepository
+import za.co.mohlare.app.data.SubjectMark
 import za.co.mohlare.app.data.UserProfile
 import za.co.mohlare.app.data.UserRepository
 import za.co.mohlare.app.data.toFriendlyMessage
@@ -87,6 +88,11 @@ class AppViewModel(
         launchAction(successMessage = "Check your email for a link to reset your password.") { auth.sendPasswordReset(email) }
 
     fun saveProfile(uid: String, profile: UserProfile) = launchAction { users.saveProfile(uid, profile) }
+
+    fun saveMarks(uid: String, marks: List<SubjectMark>, term: String, onSaved: () -> Unit) = launchAction {
+        users.saveMarks(uid, marks, term)
+        onSaved()
+    }
 
     fun signOut() = auth.signOut()
 

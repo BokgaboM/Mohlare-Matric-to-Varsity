@@ -18,7 +18,12 @@ data class UserProfile(
     val under18: Boolean,
     val guardianConsent: Boolean,
     val consentAccepted: Boolean,
+    val marks: List<SubjectMark> = emptyList(),
+    val marksTerm: String = "",
 ) {
+    /** Standard APS from the learner's saved marks. */
+    val aps: ApsResult get() = Aps.standard(marks)
+    val hasMarks: Boolean get() = marks.isNotEmpty()
     val firstName: String get() = name.trim().substringBefore(' ')
     val initials: String
         get() = name.trim().split(' ').filter { it.isNotBlank() }.take(2)
@@ -62,6 +67,17 @@ class UserRepository(private val db: FirebaseFirestore = FirebaseFirestore.getIn
         userDoc(uid).set(data, SetOptions.merge()).await()
     }
 
+    /** Saves the learner's marks and the standard APS worked out from them. */
+    suspend fun saveMarks(uid: String, marks: List<SubjectMark>, term: String) {
+        val data = mapOf(
+            "marks" to marks.map { mapOf("subject" to it.subject, "percent" to it.percent) },
+            "marksTerm" to term,
+            "aps" to Aps.standard(marks).total,
+            "updatedAt" to FieldValue.serverTimestamp(),
+        )
+        userDoc(uid).set(data, SetOptions.merge()).await()
+    }
+
     /**
      * Deletes the learner's profile document.
      * TODO: when applications and saved items are added, delete those sub-collections too.
@@ -79,4 +95,11 @@ private fun DocumentSnapshot.toUserProfile() = UserProfile(
     under18 = getBoolean("under18") ?: false,
     guardianConsent = getBoolean("guardianConsent") ?: false,
     consentAccepted = getBoolean("consentAccepted") ?: false,
+    marks = (get("marks") as? List<*>).orEmpty().mapNotNull { item ->
+        val map = item as? Map<*, *> ?: return@mapNotNull null
+        val subject = map["subject"] as? String ?: return@mapNotNull null
+        val percent = (map["percent"] as? Number)?.toInt() ?: return@mapNotNull null
+        SubjectMark(subject, percent)
+    },
+    marksTerm = getString("marksTerm") ?: "",
 )

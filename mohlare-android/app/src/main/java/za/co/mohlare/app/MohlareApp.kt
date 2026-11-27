@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import za.co.mohlare.app.data.SubjectMark
 import za.co.mohlare.app.data.UserProfile
 import za.co.mohlare.app.ui.auth.GoogleResult
 import za.co.mohlare.app.ui.auth.clearGoogleSignIn
@@ -34,6 +35,7 @@ import za.co.mohlare.app.ui.auth.requestGoogleIdToken
 import za.co.mohlare.app.ui.screens.EmailAuthScreen
 import za.co.mohlare.app.ui.screens.FailedScreen
 import za.co.mohlare.app.ui.screens.LoadingScreen
+import za.co.mohlare.app.ui.screens.MarksScreen
 import za.co.mohlare.app.ui.screens.OnboardingScreen
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -57,6 +59,7 @@ object Routes {
     const val PLAN = "plan"
     const val ME = "me"
     const val APPEARANCE = "appearance"
+    const val MARKS = "marks"
 }
 
 private enum class Tab(val route: String, val label: String, val icon: ImageVector) {
@@ -146,7 +149,10 @@ fun MohlareApp(
             profile = s.profile,
             currentTheme = currentTheme,
             onThemeChange = onThemeChange,
+            busy = busy,
             message = message,
+            onSaveMarks = { marks, term, onSaved -> vm.saveMarks(s.uid, marks, term, onSaved) },
+            onClearMessage = vm::clearMessage,
             onSignOut = signOut,
             onDeleteAccount = { vm.deleteAccount(s.uid) },
         )
@@ -162,7 +168,10 @@ private fun MainTabs(
     profile: UserProfile,
     currentTheme: MohlareThemeId,
     onThemeChange: (MohlareThemeId) -> Unit,
+    busy: Boolean,
     message: String?,
+    onSaveMarks: (marks: List<SubjectMark>, term: String, onSaved: () -> Unit) -> Unit,
+    onClearMessage: () -> Unit,
     onSignOut: () -> Unit,
     onDeleteAccount: () -> Unit,
 ) {
@@ -199,7 +208,7 @@ private fun MainTabs(
             composable(Routes.PATH) {
                 PathScreen(
                     profile = profile,
-                    onUpdateMarks = { nav.goToTab(Routes.ME) },
+                    onUpdateMarks = { onClearMessage(); nav.navigate(Routes.MARKS) },
                     onSeePlan = { nav.goToTab(Routes.PLAN) },
                 )
             }
@@ -209,9 +218,19 @@ private fun MainTabs(
                 MeScreen(
                     profile = profile,
                     message = message,
+                    onOpenMarks = { onClearMessage(); nav.navigate(Routes.MARKS) },
                     onOpenAppearance = { nav.navigate(Routes.APPEARANCE) },
                     onSignOut = onSignOut,
                     onDeleteAccount = onDeleteAccount,
+                )
+            }
+            composable(Routes.MARKS) {
+                MarksScreen(
+                    profile = profile,
+                    busy = busy,
+                    message = message,
+                    onSave = { marks, term -> onSaveMarks(marks, term) { nav.popBackStack() } },
+                    onBack = { nav.popBackStack() },
                 )
             }
             composable(Routes.APPEARANCE) {

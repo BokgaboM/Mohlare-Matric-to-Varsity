@@ -6,7 +6,7 @@
 
 ## Status
 
-Early development. Sign-in, profile setup, themes and navigation work. Courses, bursaries and deadlines still use sample data.
+Early development. Sign-in, profile setup, marks entry with live APS, themes and navigation work. Courses, bursaries and deadlines still use sample data.
 
 ## Features
 
@@ -66,7 +66,8 @@ app/src/main/java/za/co/mohlare/app/
 - [ ] Brand fonts (Bricolage Grotesque, Fraunces, Inter)
 - [x] Firebase sign-in (Google and email)
 - [x] Profile setup with privacy consent, sign out and account deletion
-- [ ] Marks entry and APS calculation per university
+- [x] Marks entry and standard APS (best six subjects, Life Orientation not counted)
+- [ ] University-specific scores (Wits, UCT and others)
 - [ ] Universities, courses and bursaries from Firestore
 - [ ] Deadline reminders
 - [ ] Sepedi, isiZulu and Afrikaans translations
