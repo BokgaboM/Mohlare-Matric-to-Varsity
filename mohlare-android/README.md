@@ -1,5 +1,7 @@
 # Mohlare: Matric to Varsity
 
+![Android CI](https://github.com/BokgaboM/mohlare-android/actions/workflows/android-ci.yml/badge.svg)
+
 **Mohlare** (Sepedi for "tree") is an Android app that helps South African Grade 11 and 12 learners plan their way to university. Enter your marks once, and Mohlare shows your APS, the courses you qualify for, the bursaries open to you, and every deadline in one plan.
 
 > Every tree starts with one root. Mohlare is built on the idea that one learner who follows their calling makes a way for the people who come after them.
@@ -59,6 +61,18 @@ app/src/main/java/za/co/mohlare/app/
 4. Download a fresh `google-services.json` (after steps 2 and 3) and put it in `app/`.
 5. **Firestore Database:** create the database, then paste the contents of `firestore.rules` into the **Rules** tab and publish.
 
+## Continuous integration
+
+Every push to `main` runs **Android CI** (`.github/workflows/android-ci.yml`):
+
+| Job | What it does | Output |
+| --- | --- | --- |
+| Unit tests | Runs `testDebugUnitTest` (APS rules and more) | Test report |
+| Lint | Runs Android lint; warnings don't fail the run yet | Lint report |
+| Build debug APK | Builds the app once tests pass | `mohlare-debug-apk` to download and install |
+
+**One-time setup:** the workflow needs `google-services.json`, which isn't in the repo. In GitHub, open **Settings → Secrets and variables → Actions → New repository secret**, name it `GOOGLE_SERVICES_JSON`, and paste the whole contents of your `app/google-services.json` file.
+
 ## Roadmap
 
 - [x] Screens, navigation and theme system
@@ -67,6 +81,7 @@ app/src/main/java/za/co/mohlare/app/
 - [x] Firebase sign-in (Google and email)
 - [x] Profile setup with privacy consent, sign out and account deletion
 - [x] Marks entry and standard APS (best six subjects, Life Orientation not counted)
+- [x] GitHub Actions pipeline: tests, lint, APK build
 - [ ] University-specific scores (Wits, UCT and others)
 - [ ] Universities, courses and bursaries from Firestore
 - [ ] Deadline reminders
