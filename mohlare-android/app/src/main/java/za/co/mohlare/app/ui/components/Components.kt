@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -99,4 +100,67 @@ fun SectionHeader(title: String, action: String? = null, onAction: () -> Unit = 
             }
         }
     }
+}
+
+/** The four language buttons, two per row. */
+@Composable
+fun LanguagePicker(selected: String, onSelect: (String) -> Unit) {
+    val c = Mohlare.tokens.colors
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        za.co.mohlare.app.data.Languages.chunked(2).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                row.forEach { lang ->
+                    val isSelected = lang == selected
+                    androidx.compose.material3.OutlinedButton(
+                        onClick = { onSelect(lang) },
+                        colors = if (isSelected) {
+                            androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = c.ink, contentColor = c.surface)
+                        } else {
+                            androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = c.ink)
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.weight(1f).height(48.dp),
+                    ) { Text(lang) }
+                }
+            }
+        }
+    }
+}
+
+/** The main action button. Shows a spinner and ignores taps while [busy]. */
+@Composable
+fun PrimaryButton(text: String, busy: Boolean, enabled: Boolean = true, onClick: () -> Unit) {
+    val c = Mohlare.tokens.colors
+    androidx.compose.material3.Button(
+        onClick = onClick,
+        enabled = enabled && !busy,
+        colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = c.accent, contentColor = c.onAccent),
+        shape = RoundedCornerShape(14.dp),
+        modifier = Modifier.fillMaxWidth().height(52.dp),
+    ) {
+        if (busy) {
+            androidx.compose.material3.CircularProgressIndicator(
+                color = c.onAccent,
+                strokeWidth = 2.dp,
+                modifier = Modifier.size(22.dp),
+            )
+        } else {
+            Text(text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+/** A short message for the learner, e.g. "That email or password isn't right." */
+@Composable
+fun MessageBanner(text: String) {
+    val c = Mohlare.tokens.colors
+    Text(
+        text,
+        color = c.warning,
+        fontSize = 14.sp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(c.warningTint, RoundedCornerShape(12.dp))
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+    )
 }

@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import za.co.mohlare.app.data.SampleData
+import za.co.mohlare.app.data.UserProfile
 import za.co.mohlare.app.ui.components.DateBlock
 import za.co.mohlare.app.ui.components.Pill
 import za.co.mohlare.app.ui.components.SectionHeader
@@ -35,7 +36,7 @@ import za.co.mohlare.app.ui.theme.PatternStrip
 import za.co.mohlare.app.ui.theme.Mohlare
 
 @Composable
-fun PathScreen(onUpdateMarks: () -> Unit, onSeePlan: () -> Unit) {
+fun PathScreen(profile: UserProfile, onUpdateMarks: () -> Unit, onSeePlan: () -> Unit) {
     val t = Mohlare.tokens
     val c = t.colors
     LazyColumn(
@@ -46,8 +47,8 @@ fun PathScreen(onUpdateMarks: () -> Unit, onSeePlan: () -> Unit) {
         item { PatternStrip() }
         item {
             Column(Modifier.padding(horizontal = 20.dp)) {
-                Text("Dumela, ${SampleData.learnerName}", color = c.ink, style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
-                Text(SampleData.gradeAndProvince, color = c.muted, fontSize = 14.sp)
+                Text("Dumela, ${profile.firstName}", color = c.ink, style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
+                Text(profile.gradeAndProvince, color = c.muted, fontSize = 14.sp)
             }
         }
         item { Box(Modifier.padding(horizontal = 20.dp)) { ApsHero(onUpdateMarks) } }

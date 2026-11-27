@@ -1,43 +1,81 @@
-# Mohlare
+# Mohlare: Matric to Varsity
 
-Play Store title: **Mohlare: Matric to Varsity**. Mohlare is Sepedi for "tree": one root, then branches, leaves and flowers. The logo is a new shoot growing from a tree stump.
+**Mohlare** (Sepedi for "tree") is an Android app that helps South African Grade 11 and 12 learners plan their way to university. Enter your marks once, and Mohlare shows your APS, the courses you qualify for, the bursaries open to you, and every deadline in one plan.
 
-Android app that helps Grade 11 and 12 learners plan their way to university: APS, courses, bursaries and deadlines in one place.
+> Every tree starts with one root. Mohlare is built on the idea that one learner who follows their calling makes a way for the people who come after them.
 
-Built from scratch by Bokgabo Mohlala. Started 15 November 2026.
+## Status
 
-## Stack
+Early development. Sign-in, profile setup, themes and navigation work. Courses, bursaries and deadlines still use sample data.
 
-- Kotlin + Jetpack Compose (Material 3)
-- Navigation Compose, DataStore (saved settings)
-- Firebase (Auth, Firestore, Messaging) to be added. See "Next steps".
-- minSdk 26, targetSdk 36, package `za.co.mohlare.app`
+## Features
 
-## What's in this starter
+| Tab | What it does |
+| --- | --- |
+| **Path** | Your APS, your next deadlines, and saved courses and bursaries |
+| **Discover** | Search courses by university and see if your APS qualifies; browse bursaries by field and closing date |
+| **Plan** | Track applications (planning, submitted, accepted) and a document checklist |
+| **Me** | Your marks, reminders, appearance and privacy settings |
 
-- App icon and logo from the Mohlare mark (`res/drawable/`, `res/mipmap-anydpi-v26/`)
-- Two themes, Heritage and Litema, switchable in Me → Appearance and remembered on the phone (`ui/theme/`)
-- Pattern art drawn in code: triangles (Heritage) and litema arcs (Litema) (`ui/theme/Patterns.kt`)
-- Welcome screen, then four tabs: Path, Discover (courses and bursaries), Plan, Me
-- Sample data only (`data/SampleData.kt`). Every name, date and APS number is a placeholder.
+**Themes:** Mohlare ships with two looks, **Heritage** (warm earth tones with Ndebele-inspired patterns) and **Litema** (clay tones with curved mural lines). The theme system is built so new looks can be added over time.
 
-## Open it
+**Languages (planned):** English, Sepedi, isiZulu and Afrikaans.
 
-1. Unzip, then in Android Studio choose **File → Open** and pick the `mohlare-android` folder.
-2. Let Gradle sync finish (first sync downloads Gradle 8.13 and the libraries).
-3. If Studio offers to update the Android Gradle Plugin or library versions, accept. The versions in `gradle/libs.versions.toml` are a safe baseline.
+## Tech stack
 
-## Run it on your phone (no emulator)
+- Kotlin, Jetpack Compose, Material 3
+- Navigation Compose
+- DataStore for on-device settings
+- Firebase Authentication (Google via Credential Manager, email) and Cloud Firestore
+- minSdk 26, targetSdk 36
 
-1. **Build → Build App Bundle(s) / APK(s) → Build APK(s)**.
-2. Find the APK in `app/build/outputs/apk/debug/`.
-3. Send it to your phone (Google Drive or email), open it, and allow "Install unknown apps" for that one app.
+## Project structure
 
-## Next steps
+```
+app/src/main/java/za/co/mohlare/app/
+├── MainActivity.kt          App entry point
+├── MohlareApp.kt            Navigation and bottom tabs
+├── AppViewModel.kt          Sign-in state: signed out, profile setup or ready
+├── data/                    Firebase repositories, sample data, saved settings
+└── ui/
+    ├── auth/                Google sign-in through Credential Manager
+    ├── components/          Shared cards, buttons, pills, date blocks
+    ├── screens/             Welcome, email sign-in, profile setup, Path, Discover, Plan, Me, Appearance
+    └── theme/               Themes, colours and pattern drawing
+```
 
-1. **Fonts:** download Bricolage Grotesque, Fraunces and Inter from Google Fonts (all free, OFL licence). Put the `.ttf` files in `app/src/main/res/font/` (lowercase names, e.g. `fraunces_bold.ttf`) and swap `FontFamily.SansSerif` / `FontFamily.Serif` in `ui/theme/Themes.kt`.
-2. **Firebase:** create the `mohlare-app` project, add `app/google-services.json`, then add the `com.google.gms.google-services` plugin and the Firebase BoM.
-3. **Sign-in:** replace the Welcome buttons with Firebase Authentication (Google + email).
-4. **Real data:** load universities, courses and bursaries from Firestore instead of `SampleData`.
-5. **Dark mode:** add a dark colour set to each theme.
-6. **Remote themes:** load extra themes from the Firestore `themes` collection.
+## Getting started
+
+1. Clone the repo and open it in Android Studio (**File → Open**).
+2. Add your own `app/google-services.json` from the Firebase console (it is not committed). See **Firebase setup** below.
+3. Let Gradle sync finish.
+4. Run it on a phone or emulator, or build an APK with **Build → Build App Bundle(s) / APK(s) → Build APK(s)**.
+
+## Firebase setup
+
+1. In the Firebase console, open the `mohlare-app` project.
+2. **Authentication → Sign-in method:** turn on **Google** and **Email/Password**.
+3. **Project settings → Your apps → Android app** (`za.co.mohlare.app`): add your debug **SHA-1** fingerprint. Get it in Android Studio from the Gradle panel: **app → Tasks → android → signingReport**.
+4. Download a fresh `google-services.json` (after steps 2 and 3) and put it in `app/`.
+5. **Firestore Database:** create the database, then paste the contents of `firestore.rules` into the **Rules** tab and publish.
+
+## Roadmap
+
+- [x] Screens, navigation and theme system
+- [x] App icon and logo
+- [ ] Brand fonts (Bricolage Grotesque, Fraunces, Inter)
+- [x] Firebase sign-in (Google and email)
+- [x] Profile setup with privacy consent, sign out and account deletion
+- [ ] Marks entry and APS calculation per university
+- [ ] Universities, courses and bursaries from Firestore
+- [ ] Deadline reminders
+- [ ] Sepedi, isiZulu and Afrikaans translations
+- [ ] Dark mode
+- [ ] Hosted privacy policy and data download
+- [ ] Closed testing and Google Play release
+
+## Licence
+
+© 2026 Bokgabo Mohlala. All rights reserved.
+
+This code is not open source. No part of it may be copied, modified or distributed without written permission from the author.

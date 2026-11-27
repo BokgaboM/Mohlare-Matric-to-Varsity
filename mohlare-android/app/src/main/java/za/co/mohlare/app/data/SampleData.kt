@@ -43,9 +43,6 @@ data class Application(val name: String, val closes: String, val status: AppStat
 data class DocumentItem(val name: String, val ready: Boolean)
 
 object SampleData {
-    const val learnerName = "Lerato"
-    const val learnerFullName = "Lerato Mokoena"
-    const val gradeAndProvince = "Grade 12 · Limpopo"
     const val aps = 34
     const val subjectCount = 6
     const val matchingCourses = 12

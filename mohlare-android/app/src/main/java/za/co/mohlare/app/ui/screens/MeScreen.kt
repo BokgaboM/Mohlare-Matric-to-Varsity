@@ -15,11 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,14 +34,40 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import za.co.mohlare.app.data.SampleData
+import za.co.mohlare.app.data.UserProfile
+import za.co.mohlare.app.ui.components.MessageBanner
 import za.co.mohlare.app.ui.components.MohlareCard
 import za.co.mohlare.app.ui.theme.PatternStrip
 import za.co.mohlare.app.ui.theme.Mohlare
 
 @Composable
-fun MeScreen(onOpenAppearance: () -> Unit) {
+fun MeScreen(
+    profile: UserProfile,
+    message: String?,
+    onOpenAppearance: () -> Unit,
+    onSignOut: () -> Unit,
+    onDeleteAccount: () -> Unit,
+) {
     val t = Mohlare.tokens
     val c = t.colors
+    var confirmDelete by remember { mutableStateOf(false) }
+
+    if (confirmDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text("Delete your account?") },
+            text = { Text("This deletes your profile, marks and plan from Mohlare. You can't undo it.") },
+            confirmButton = {
+                TextButton(onClick = { confirmDelete = false; onDeleteAccount() }) {
+                    Text("Delete", color = c.accent, fontWeight = FontWeight.SemiBold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDelete = false }) { Text("Keep my account", color = c.ink) }
+            },
+            containerColor = c.surface,
+        )
+    }
     LazyColumn(
         Modifier.fillMaxSize().background(c.background),
         contentPadding = PaddingValues(bottom = 24.dp),
@@ -60,11 +88,11 @@ fun MeScreen(onOpenAppearance: () -> Unit) {
                         .background(c.hero, CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text("LM", color = c.onHero, fontFamily = t.headingFont, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Text(profile.initials, color = c.onHero, fontFamily = t.headingFont, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 }
                 Column {
-                    Text(SampleData.learnerFullName, color = c.ink, style = MaterialTheme.typography.headlineMedium)
-                    Text(SampleData.gradeAndProvince, color = c.muted, fontSize = 14.sp)
+                    Text(profile.name, color = c.ink, style = MaterialTheme.typography.headlineMedium)
+                    Text(profile.gradeAndProvince, color = c.muted, fontSize = 14.sp)
                 }
             }
         }
@@ -81,12 +109,16 @@ fun MeScreen(onOpenAppearance: () -> Unit) {
                 ToggleRow("New bursaries for my field", false)
             }
         }
+        if (message != null) {
+            item { Box(Modifier.padding(horizontal = 20.dp)) { MessageBanner(message) } }
+        }
         item {
             Section("Privacy") {
                 SettingRow("Privacy policy", "") { }
                 SettingRow("Download my data", "") { }
+                SettingRow("Sign out", "", onClick = onSignOut)
                 // Required by Google Play and POPIA: let learners delete their account and data.
-                SettingRow("Delete my account and data", "", color = c.accent) { }
+                SettingRow("Delete my account and data", "", color = c.accent) { confirmDelete = true }
             }
         }
     }

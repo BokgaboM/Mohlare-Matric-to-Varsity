@@ -33,15 +33,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import za.co.mohlare.app.ui.theme.HeroStyle
 import za.co.mohlare.app.ui.theme.PatternBlock
+import za.co.mohlare.app.ui.components.LanguagePicker
+import za.co.mohlare.app.ui.components.MessageBanner
+import za.co.mohlare.app.ui.components.PrimaryButton
 import za.co.mohlare.app.ui.theme.Mohlare
 
-private val languages = listOf("English", "Sepedi", "isiZulu", "Afrikaans")
-
 @Composable
-fun WelcomeScreen(onContinue: () -> Unit) {
+fun WelcomeScreen(
+    language: String,
+    onLanguageChange: (String) -> Unit,
+    busy: Boolean,
+    message: String?,
+    onGoogle: () -> Unit,
+    onEmail: () -> Unit,
+) {
     val t = Mohlare.tokens
     val c = t.colors
-    var language by remember { mutableStateOf(languages.first()) }
 
     Column(
         Modifier
@@ -85,39 +92,18 @@ fun WelcomeScreen(onContinue: () -> Unit) {
             )
 
             Text("CHOOSE YOUR LANGUAGE", color = c.muted, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-            languages.chunked(2).forEach { row ->
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    row.forEach { lang ->
-                        val selected = lang == language
-                        val colors = if (selected) {
-                            ButtonDefaults.buttonColors(containerColor = c.ink, contentColor = c.surface)
-                        } else {
-                            ButtonDefaults.outlinedButtonColors(contentColor = c.ink)
-                        }
-                        OutlinedButton(
-                            onClick = { language = lang },
-                            colors = colors,
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.weight(1f).height(48.dp),
-                        ) { Text(lang) }
-                    }
-                }
-            }
+            LanguagePicker(selected = language, onSelect = onLanguageChange)
 
             Spacer(Modifier.height(4.dp))
-            // TODO: replace with Firebase Authentication (Google sign-in).
-            Button(
-                onClick = onContinue,
-                colors = ButtonDefaults.buttonColors(containerColor = c.accent, contentColor = c.onAccent),
-                shape = RoundedCornerShape(14.dp),
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-            ) { Text("Continue with Google", fontSize = 16.sp, fontWeight = FontWeight.SemiBold) }
+            if (message != null) MessageBanner(message)
+            PrimaryButton("Continue with Google", busy = busy, onClick = onGoogle)
             OutlinedButton(
-                onClick = onContinue,
+                onClick = onEmail,
+                enabled = !busy,
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = c.ink),
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-            ) { Text("Sign up with email", fontSize = 16.sp, fontWeight = FontWeight.SemiBold) }
+            ) { Text("Use email instead", fontSize = 16.sp, fontWeight = FontWeight.SemiBold) }
             Text("Free for Grade 11 and 12 learners.", color = c.muted, fontSize = 13.sp)
         }
     }

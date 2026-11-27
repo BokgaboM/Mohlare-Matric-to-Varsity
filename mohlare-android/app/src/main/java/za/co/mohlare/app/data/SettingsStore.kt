@@ -24,4 +24,17 @@ class SettingsStore(private val context: Context) {
     suspend fun setTheme(id: MohlareThemeId) {
         context.dataStore.edit { it[themeKey] = id.name }
     }
+
+    private val languageKey = stringPreferencesKey("language")
+
+    /** The language picked on the welcome screen, before the learner has an account. */
+    val language: Flow<String> = context.dataStore.data.map { prefs ->
+        prefs[languageKey] ?: Languages.first()
+    }
+
+    suspend fun setLanguage(language: String) {
+        context.dataStore.edit { it[languageKey] = language }
+    }
 }
+
+val Languages = listOf("English", "Sepedi", "isiZulu", "Afrikaans")
